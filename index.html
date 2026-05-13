@@ -1019,19 +1019,16 @@
     });
   });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
 <script>
-  // Reemplaza esto con tu Public Key de EmailJS
-  emailjs.init("EMAILJS_PUBLIC_KEY");
-
-  document.getElementById("formEmail").addEventListener("submit", function (e) {
+  document.getElementById("formEmail").addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const nombre = document.getElementById("fullName").value.trim();
     const correo = document.getElementById("email").value.trim();
     const telefono = document.getElementById("phone").value.trim();
     const mensaje = document.getElementById("message").value.trim();
+
     const resultado = document.getElementById("resultMessage");
     const boton = document.getElementById("btnEnviarEmail");
 
@@ -1041,45 +1038,43 @@
       return;
     }
 
-    const ahora = new Date();
-    const fechaHora = ahora.toLocaleString("es-BO", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-
     boton.disabled = true;
     boton.innerHTML = "Enviando...";
     resultado.innerHTML = "";
 
-    emailjs.send("EMAILJS_SERVICE_ID", "EMAILJS_TEMPLATE_ID", {
-      name: nombre,
-      email: correo,
-      phone: telefono,
-      service: "SPB - Sistema de Planillas Multiempresa",
-      message: mensaje,
-      time: fechaHora
-    })
-    .then(function () {
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: nombre,
+          email: correo,
+          phone: telefono,
+          message: mensaje
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "No se pudo enviar el mensaje.");
+      }
+
       resultado.innerHTML = "Mensaje enviado correctamente.";
       resultado.style.color = "green";
 
       document.getElementById("formEmail").reset();
-
-      boton.disabled = false;
-      boton.innerHTML = "Enviar";
-    })
-    .catch(function (error) {
-      console.log("Error EmailJS:", error);
+    } catch (error) {
+      console.error("Error:", error);
 
       resultado.innerHTML = "No se pudo enviar el mensaje. Intenta nuevamente.";
       resultado.style.color = "red";
-
+    } finally {
       boton.disabled = false;
       boton.innerHTML = "Enviar";
-    });
+    }
   });
 </script>
 </body>

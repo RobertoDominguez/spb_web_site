@@ -4,8 +4,9 @@
   "description": "",
   "main": "tailwind.config.js",
   "scripts": {
-    "dev": "npx @tailwindcss/cli -i ./src/input.css -o ./src/css/tailwind.css --watch"
-  },
+  "dev": "npx @tailwindcss/cli -i ./src/input.css -o ./src/css/tailwind.css --watch",
+  "start": "node server.js"
+},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/uideck/play-tailwind.git"
@@ -21,6 +22,9 @@
   },
   "dependencies": {
     "@tailwindcss/cli": "^4.0.9",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "nodemailer": "^8.0.7",
     "postcss": "^8.5.3"
   }
 }
